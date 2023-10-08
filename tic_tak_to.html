@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://files.realpython.com/media/Make-a-Tic-Tac-Toe-Game-With-Python_Watermarked.d65b73a46d0d.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            background-color: rgba(0, 0, 0, 0.7); /* Background color with opacity */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .cell:hover {
+            background-color: #2980b9;
+        }
+
+        /* Custom styling for X and O */
+        .cell.X {
+            background-color: #e74c3c;
+        }
+
+        .cell.O {
+            background-color: #27ae60;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff; /* Text color for message */
+        }
+    </style>
+</head>
+<body>
+    <div id="game-board">
+        <!-- Cells are added dynamically via JavaScript -->
+    </div>
+    <div class="message">Player X's turn</div>
+
+    <script>
+        const board = document.getElementById('game-board');
+        const cells = [];
+        let currentPlayer = 'X';
+        let gameOver = false;
+
+        // Create and initialize cells
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.addEventListener('click', () => makeMove(i));
+            cells.push(cell);
+            board.appendChild(cell);
+        }
+
+        function makeMove(index) {
+            if (!cells[index].textContent && !gameOver) {
+                cells[index].textContent = currentPlayer;
+                cells[index].classList.add(currentPlayer);
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                checkForWin();
+            }
+        }
+
+        function checkForWin() {
+            const winningCombos = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6] // Diagonals
+            ];
+
+            for (const combo of winningCombos) {
+                const [a, b, c] = combo;
+                if (cells[a].textContent && cells[a].textContent === cells[b].textContent && cells[a].textContent === cells[c].textContent) {
+                    gameOver = true;
+                    highlightWinningCombo(combo);
+                    displayMessage(`Player ${currentPlayer === 'X' ? 'O' : 'X'} wins!`);
+                    return;
+                }
+            }
+
+            if (!cells.some(cell => !cell.textContent)) {
+                gameOver = true;
+                displayMessage('It\'s a draw!');
+            } else {
+                displayMessage(`Player ${currentPlayer}'s turn`);
+            }
+        }
+
+        function highlightWinningCombo(combo) {
+            for (const index of combo) {
+                cells[index].classList.add('win');
+            }
+        }
+
+        function displayMessage(message) {
+            document.querySelector('.message').textContent = message;
+        }
+    </script>
+</body>
+</html>
